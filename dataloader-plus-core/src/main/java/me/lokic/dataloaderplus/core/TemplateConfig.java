@@ -1,24 +1,25 @@
 package me.lokic.dataloaderplus.core;
 
 import lombok.Builder;
-import lombok.Getter;
 import org.dataloader.DataLoaderOptions;
 
 /**
  * {@link DataLoaderTemplate} 需要的配置
  */
-@Getter
 @Builder
-public class TemplateOptions {
+public class TemplateConfig {
 
     private static final DataLoaderOptions DEFAULT_OPTIONS = DataLoaderOptions.newOptions();
-    public static final DataLoaderFactory DEFAULT_FACTORY = new DataLoaderFactory();
+    private static final DataLoaderFactory DEFAULT_FACTORY = new DataLoaderFactory();
+
+
+    public static final TemplateConfig DEFAULT = TemplateConfig.builder().build();
 
     private final DataLoaderOptions options;
     private final DataLoaderFactory factory;
 
 
-    public TemplateOptions(DataLoaderOptions options, DataLoaderFactory factory) {
+    private TemplateConfig(DataLoaderOptions options, DataLoaderFactory factory) {
         this.options = options == null ? DEFAULT_OPTIONS : options;
         this.factory = factory == null ? DEFAULT_FACTORY : factory;
     }

@@ -11,7 +11,7 @@ public class DataLoaderTemplate {
     private final DataLoaderFactory factory;
 
 
-    public DataLoaderTemplate(TemplateOptions options) {
+    public DataLoaderTemplate(TemplateConfig options) {
         this.options = options.getOptions();
         this.factory = options.getFactory();
     }
