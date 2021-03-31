@@ -34,7 +34,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
 
         ExDataLoaderRegistry registry = RegistryHolder.getRegistry();
         if (registry == null) {
-            throw new IllegalArgumentException("@DataLoaderService need in DataLoaderResource block");
+            throw new IllegalArgumentException("@DataLoaderService need in DataLoaderTemplate block");
         }
 
         int contextIndex = findContextIndex(method);
