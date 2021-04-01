@@ -5,6 +5,7 @@ import me.lokic.dataloaderplus.core.service.UserNameBatchLoader;
 import me.lokic.dataloaderplus.core.service.UserService;
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoader;
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.Mockito;
 
@@ -32,19 +33,23 @@ public class DataLoaderTemplateTest {
         DataLoaderTemplate template = new DataLoaderTemplate(TemplateConfig.builder().factory(factory).build());
 
         UserService userService = ExDataLoaderRegistry.getService(UserService.class);
-
-
-        template.using(registry -> {
+        List<String> names = template.using(registry -> {
             List<CompletableFuture<String>> li = new ArrayList<>();
             li.add(userService.getNameById("1"));
             li.add(userService.getNameById("2"));
             return CompletableFutures.sequence(li);
         });
 
+
+        List<String> expectRes = new ArrayList<>();
+        expectRes.add("name:1");
+        expectRes.add("name:2");
+        Assert.assertEquals(expectRes, names);
+
+
         Set<String> set = new HashSet<>();
         set.add("1");
         set.add("2");
-
         Mockito.verify(userNameBatchLoader, Mockito.times(1))
                 .load(Mockito.eq(set), Mockito.any());
 
