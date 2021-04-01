@@ -33,7 +33,7 @@ public class DataLoaderTemplateTest {
         DataLoaderTemplate template = new DataLoaderTemplate(TemplateConfig.builder().factory(factory).build());
 
         UserService userService = ExDataLoaderRegistry.getService(UserService.class);
-        List<String> names = template.using(registry -> {
+        List<String> res = template.using(registry -> {
             List<CompletableFuture<String>> li = new ArrayList<>();
             li.add(userService.getNameById("1"));
             li.add(userService.getNameById("2"));
@@ -41,10 +41,10 @@ public class DataLoaderTemplateTest {
         });
 
 
-        List<String> expectRes = new ArrayList<>();
-        expectRes.add("name:1");
-        expectRes.add("name:2");
-        Assert.assertEquals(expectRes, names);
+        List<String> expectedRes = new ArrayList<>();
+        expectedRes.add("name:1");
+        expectedRes.add("name:2");
+        Assert.assertEquals(expectedRes, res);
 
 
         Set<String> set = new HashSet<>();
