@@ -7,7 +7,6 @@ import org.dataloader.DataLoaderOptions;
 import org.dataloader.DataLoaderRegistry;
 import org.dataloader.MappedBatchLoaderWithContext;
 
-import java.util.List;
 import java.util.Map;
 import java.util.concurrent.ConcurrentHashMap;
 
@@ -55,13 +54,6 @@ public class ExDataLoaderRegistry extends DataLoaderRegistry {
                 serviceClazz,
                 InterfaceProxy::newInstance
         );
-    }
-
-
-    @Override
-    public void dispatchAll() {
-        List<DataLoader<?, ?>> dataLoaders = getDataLoaders();
-        dataLoaders.forEach(DataLoader::dispatch);
     }
 
 }
