@@ -34,7 +34,9 @@ public class ServiceInvocationHandler implements InvocationHandler {
 
         ExDataLoaderRegistry registry = RegistryHolder.getRegistry();
         if (registry == null) {
-            throw new IllegalArgumentException("@DataLoaderService need in DataLoaderTemplate block");
+            //see https://www.graphql-java.com/documentation/v16/batching/
+            throw new IllegalArgumentException("@DataLoaderService need in DataLoaderTemplate block " +
+                    "or not support an asynchronous off thread call to a DataLoader");
         }
 
         int contextIndex = findContextIndex(method);
