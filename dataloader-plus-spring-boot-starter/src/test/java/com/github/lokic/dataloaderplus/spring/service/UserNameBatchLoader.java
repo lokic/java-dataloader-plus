@@ -1,4 +1,4 @@
-package com.github.lokic.dataloaderplus.core.service;
+package com.github.lokic.dataloaderplus.spring.service;
 
 import com.github.lokic.dataloaderplus.core.MultiKeyMappedBatchLoader;
 import lombok.SneakyThrows;
@@ -23,20 +23,7 @@ public class UserNameBatchLoader implements MultiKeyMappedBatchLoader<String, St
         return CompletableFuture.supplyAsync(() -> {
             log.info("UserNameBatchLoader1 supplyAsync start");
             return set.stream()
-                    .collect(Collectors.toMap(Function.identity(), x -> "name:" + x));
+                    .collect(Collectors.toMap(Function.identity(), x -> "name:"));
         });
-//        return CompletableFuture.completedFuture(set.stream()
-//                    .collect(Collectors.toMap(Function.identity(), x -> "name:" + x)));
-
-
-//        Thread.sleep(1000L);
-//      return CompletableFutures.sequence(set.stream()
-//                .collect(Collectors.toMap(Function.identity(), x ->  {
-//                    log.info("UserNameBatchLoader1 supplyAsync start " + x);
-//                    if(x.endsWith("xx")){
-//                        return CompletableFuture.completedFuture("end end " + x);
-//                    }
-//                    return userService2.getNameById(x + "x");
-//                })));
     }
 }

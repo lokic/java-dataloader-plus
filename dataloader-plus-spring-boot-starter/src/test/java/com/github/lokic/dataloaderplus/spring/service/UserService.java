@@ -1,4 +1,4 @@
-package com.github.lokic.dataloaderplus.core.service;
+package com.github.lokic.dataloaderplus.spring.service;
 
 import com.github.lokic.dataloaderplus.core.annotation.DataLoaderMethod;
 import com.github.lokic.dataloaderplus.core.annotation.DataLoaderService;
@@ -9,5 +9,5 @@ import java.util.concurrent.CompletableFuture;
 public interface UserService {
 
     @DataLoaderMethod(batchLoader = UserNameBatchLoader.class)
-    CompletableFuture<String> getAddressById(String id);
+    CompletableFuture<String> getNameById(String id);
 }
