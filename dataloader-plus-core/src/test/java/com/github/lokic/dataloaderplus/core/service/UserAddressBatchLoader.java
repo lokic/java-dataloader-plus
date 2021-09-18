@@ -7,8 +7,6 @@ import org.dataloader.BatchLoaderEnvironment;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -17,12 +15,8 @@ public class UserAddressBatchLoader implements MultiKeyMappedBatchLoader<String,
 
     @SneakyThrows
     @Override
-    public CompletionStage<Map<String, String>> doLoad(Set<String> set, BatchLoaderEnvironment batchLoaderEnvironment) {
+    public Map<String, String> doLoad(Set<String> set, BatchLoaderEnvironment batchLoaderEnvironment) {
         log.info("UserAddressBatchLoader start");
-
-        return CompletableFuture.supplyAsync(() -> {
-            log.info("UserAddressBatchLoader async start");
-            return set.stream().collect(Collectors.toMap(Function.identity(), x -> "address:" + x));
-        });
+        return set.stream().collect(Collectors.toMap(Function.identity(), x -> "address:" + x));
     }
 }

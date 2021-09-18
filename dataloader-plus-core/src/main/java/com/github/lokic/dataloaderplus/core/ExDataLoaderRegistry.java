@@ -51,28 +51,17 @@ public class ExDataLoaderRegistry implements AutoCloseable {
         return registry.computeIfAbsent(clazz.getName(), key -> factory.create(key, options));
     }
 
-    /**
-     * 获取对应的 {@link DataLoader}
-     *
-     * @param clazz
-     * @param <K>
-     * @param <V>
-     * @return
-     */
-    public <K, V> DataLoader<K, V> getDataLoader(Class<? extends MappedBatchLoaderWithContext<?, ?>> clazz) {
-        return registry.getDataLoader(clazz.getName());
-    }
-
-    @SafeVarargs
-    public final ExDataLoaderRegistry register(Class<? extends MappedBatchLoaderWithContext<?, ?>>... classes) {
-        for (Class<? extends MappedBatchLoaderWithContext<?, ?>> clazz : classes) {
-            getOrRegisterDataLoader(clazz);
-        }
-        return this;
-    }
-
     public void dispatchAll() {
-        registry.dispatchAll();
+        registry.getDataLoaders().forEach(this::dispatch);
+    }
+
+    private void dispatch(DataLoader<?, ?> dataLoader) {
+        dataLoader.dispatch()
+                .thenAccept(li -> {
+                    if (!li.isEmpty()) {
+                        RegistryHolder.tryDispatchAll();
+                    }
+                });
     }
 
     /**

@@ -1,10 +1,10 @@
 package com.github.lokic.dataloaderplus.core;
 
-import com.github.lokic.dataloaderplus.core.kits.CompletableFutures;
 import com.github.lokic.dataloaderplus.core.service.UserAddressBatchLoader;
 import com.github.lokic.dataloaderplus.core.service.UserNameBatchLoader;
 import com.github.lokic.dataloaderplus.core.service.UserService;
 import com.github.lokic.dataloaderplus.core.service.UserService2;
+import com.github.lokic.javaplus.CompletableFutures;
 import lombok.extern.slf4j.Slf4j;
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoaderOptions;
@@ -52,7 +52,7 @@ public class DataLoaderTemplateTest {
      * 多次执行dataloader，方法{@link UserNameBatchLoader#load(Set, BatchLoaderEnvironment)} 调用一次
      */
     @Test
-    public void testBatchLoaderCallOneTimes() {
+    public void test_batchLoader_callOneTimes() throws Throwable {
 
         Set<String> set = new HashSet<>();
 
@@ -61,16 +61,13 @@ public class DataLoaderTemplateTest {
         }
 
         List<UserInfo> res =
-                template.using(
-                        RegistryFactoryType.DEFAULT,
-                        reg -> reg.register(UserNameBatchLoader.class)
-                                .register(UserAddressBatchLoader.class),
-                        reg -> {
-                            List<CompletableFuture<UserInfo>> li = set.stream()
-                                    .map(this::process)
-                                    .collect(Collectors.toList());
-                            return CompletableFutures.sequence(li);
-                        });
+                template.using(reg -> {
+                    List<CompletableFuture<UserInfo>> li = set.stream()
+                            .map(this::process)
+                            .collect(Collectors.toList());
+                    return CompletableFutures.sequence(li);
+                }).join();
+
         List<String> strings = res.stream()
                 .map(u -> new StringJoiner(",")
                         .add(u.getId()).add(u.getName()).add(u.getAddress())
@@ -84,7 +81,6 @@ public class DataLoaderTemplateTest {
 
         UserNameBatchLoader userNameBatchLoader = (UserNameBatchLoader) templateConfig.getFactory().getMultiKeyMappedBatchLoader(UserNameBatchLoader.class.getName());
         UserAddressBatchLoader userAddressBatchLoader = (UserAddressBatchLoader) templateConfig.getFactory().getMultiKeyMappedBatchLoader(UserAddressBatchLoader.class.getName());
-
         Mockito.verify(userNameBatchLoader, Mockito.times(1))
                 .load(Mockito.eq(set), Mockito.any());
 
@@ -95,8 +91,8 @@ public class DataLoaderTemplateTest {
 
     private CompletableFuture<UserInfo> process(String userId) {
         return CompletableFuture.completedFuture(userId)
-                .thenCompose(For(userService::getAddressById))
-                .thenCompose(For((uid, name) -> userService2.getNameById(uid)))
+                .thenCompose(For(userService::getNameById))
+                .thenCompose(For((uid, name) -> userService2.getAddressById(uid)))
                 .thenApply(Yield(UserInfo::new));
     }
 

@@ -16,7 +16,7 @@ import static java.lang.annotation.ElementType.METHOD;
 @Target({METHOD})
 @Retention(RetentionPolicy.RUNTIME)
 @Documented
-public @interface DataLoaderMethod {
+public @interface DataLoaderMapping {
 
     /**
      * 对应的 MultiKeyMappedBatchLoader 的实现类，实际会通过 {@link DataLoaderFactory} 进行注册，

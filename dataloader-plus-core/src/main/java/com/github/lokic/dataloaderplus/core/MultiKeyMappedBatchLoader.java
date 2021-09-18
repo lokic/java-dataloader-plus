@@ -1,5 +1,6 @@
 package com.github.lokic.dataloaderplus.core;
 
+import com.github.lokic.javaplus.CompletableFutures;
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.MappedBatchLoaderWithContext;
 
@@ -22,11 +23,10 @@ public interface MultiKeyMappedBatchLoader<K, V> extends MappedBatchLoaderWithCo
 
     @Override
     default CompletionStage<Map<K, V>> load(Set<K> keys, BatchLoaderEnvironment environment) {
-        CompletionStage<Map<K, V>> future = doLoad(keys, environment);
-        future.thenAccept(f -> RegistryHolder.tryDispatchAll());
-        return future;
+        // 为了控制future的异步线程数，在这里完成future的同步执行，保证之后的操作还是在业务线程中执行
+        return CompletableFutures.supply(() -> doLoad(keys, environment));
     }
 
-    CompletionStage<Map<K, V>> doLoad(Set<K> keys, BatchLoaderEnvironment environment);
+    Map<K, V> doLoad(Set<K> keys, BatchLoaderEnvironment environment);
 
 }

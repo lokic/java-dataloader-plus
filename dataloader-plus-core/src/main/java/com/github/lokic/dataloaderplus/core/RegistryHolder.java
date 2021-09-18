@@ -1,13 +1,11 @@
 package com.github.lokic.dataloaderplus.core;
 
-import com.alibaba.ttl.TransmittableThreadLocal;
-
 /**
  * 以线程绑定的形式获取 {@link ExDataLoaderRegistry}
  */
 public class RegistryHolder {
 
-    public static final ThreadLocal<ExDataLoaderRegistry> HOLDER = new TransmittableThreadLocal<>();
+    public static final ThreadLocal<ExDataLoaderRegistry> HOLDER = new ThreadLocal<>();
 
     /**
      * 获取当前线程的ExDataLoaderRegistry

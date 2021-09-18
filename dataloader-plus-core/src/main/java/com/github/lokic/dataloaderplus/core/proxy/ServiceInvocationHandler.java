@@ -3,7 +3,7 @@ package com.github.lokic.dataloaderplus.core.proxy;
 import com.github.lokic.dataloaderplus.core.ExDataLoaderRegistry;
 import com.github.lokic.dataloaderplus.core.MultiKeyMappedBatchLoader;
 import com.github.lokic.dataloaderplus.core.RegistryHolder;
-import com.github.lokic.dataloaderplus.core.annotation.DataLoaderMethod;
+import com.github.lokic.dataloaderplus.core.annotation.DataLoaderMapping;
 import com.github.lokic.dataloaderplus.core.annotation.KeyContext;
 import com.github.lokic.dataloaderplus.core.kits.Arrays;
 import com.github.lokic.dataloaderplus.core.tuples.Tuple;
@@ -30,7 +30,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
         ExDataLoaderRegistry registry = RegistryHolder.getRegistry();
         if (registry == null) {
             //see https://www.graphql-java.com/documentation/v16/batching/
-            throw new IllegalStateException("@DataLoaderService need in DataLoaderTemplate block " +
+            throw new IllegalStateException("@DataLoaderService not in DataLoaderTemplate block " +
                     "or call to a DataLoader in an asynchronous off thread");
         }
         Class<? extends MultiKeyMappedBatchLoader<?, ?>> provider = batchLoaderMapping.computeIfAbsent(method, this::findBatchLoaderClass);
@@ -51,14 +51,14 @@ public class ServiceInvocationHandler implements InvocationHandler {
      * @return
      */
     private Class<? extends MultiKeyMappedBatchLoader<?, ?>> findBatchLoaderClass(Method method) {
-        DataLoaderMethod dataLoaderMethod = method.getAnnotation(DataLoaderMethod.class);
-        if (dataLoaderMethod == null) {
-            throw new IllegalArgumentException("without @DataLoaderMethod");
+        DataLoaderMapping dataLoaderMapping = method.getAnnotation(DataLoaderMapping.class);
+        if (dataLoaderMapping == null) {
+            throw new IllegalArgumentException("without @DataLoaderMapping");
         }
         if (!method.getReturnType().isAssignableFrom(CompletableFuture.class)) {
             throw new IllegalArgumentException("return type need CompletableFuture");
         }
-        return dataLoaderMethod.batchLoader();
+        return dataLoaderMapping.batchLoader();
     }
 
     /**
@@ -69,7 +69,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
     private Object buildKey(Object[] args, int contextIndex) {
         Object[] noKeyContextArgs = Arrays.remove(args, contextIndex);
         if (noKeyContextArgs.length == 0) {
-            throw new IllegalArgumentException("no args method not support @DataLoaderMethod");
+            throw new IllegalArgumentException("no args method not support @DataLoaderMapping");
         }
         return noKeyContextArgs.length == 1 ? noKeyContextArgs[0] : Tuple.fromArray(noKeyContextArgs);
     }
@@ -77,8 +77,8 @@ public class ServiceInvocationHandler implements InvocationHandler {
     /**
      * 构建keyContext， 没有找到返回null
      *
-     * @param args
-     * @param contextIndex
+     * @param args         调用方法的参数
+     * @param contextIndex context的index
      * @return
      */
     private Object buildKeyContext(Object[] args, int contextIndex) {

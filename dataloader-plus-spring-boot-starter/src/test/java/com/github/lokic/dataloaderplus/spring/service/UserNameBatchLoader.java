@@ -7,8 +7,6 @@ import org.dataloader.BatchLoaderEnvironment;
 
 import java.util.Map;
 import java.util.Set;
-import java.util.concurrent.CompletableFuture;
-import java.util.concurrent.CompletionStage;
 import java.util.function.Function;
 import java.util.stream.Collectors;
 
@@ -18,12 +16,9 @@ public class UserNameBatchLoader implements MultiKeyMappedBatchLoader<String, St
 
     @SneakyThrows
     @Override
-    public CompletionStage<Map<String, String>> doLoad(Set<String> set, BatchLoaderEnvironment batchLoaderEnvironment) {
-        log.info("UserNameBatchLoader1 start");
-        return CompletableFuture.supplyAsync(() -> {
-            log.info("UserNameBatchLoader1 supplyAsync start");
-            return set.stream()
-                    .collect(Collectors.toMap(Function.identity(), x -> "name:"));
-        });
+    public Map<String, String> doLoad(Set<String> set, BatchLoaderEnvironment batchLoaderEnvironment) {
+        log.debug("UserNameBatchLoader start");
+        return set.stream()
+                .collect(Collectors.toMap(Function.identity(), x -> "name:" + x));
     }
 }
