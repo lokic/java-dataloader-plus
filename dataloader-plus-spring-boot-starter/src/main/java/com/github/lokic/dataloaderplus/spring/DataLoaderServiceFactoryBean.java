@@ -1,6 +1,7 @@
 package com.github.lokic.dataloaderplus.spring;
 
 import com.github.lokic.dataloaderplus.core.ExDataLoaderRegistry;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.FactoryBean;
 
@@ -12,30 +13,25 @@ import org.springframework.beans.factory.FactoryBean;
 @Slf4j
 public class DataLoaderServiceFactoryBean<T> implements FactoryBean<T> {
 
-    private final String innerClassName;
+    private final Class<?> innerClass;
 
-    public DataLoaderServiceFactoryBean(String innerClassName) {
-        this.innerClassName = innerClassName;
+    public DataLoaderServiceFactoryBean(Class<?> innerClass) {
+        this.innerClass = innerClass;
     }
 
     @SuppressWarnings("unchecked")
     @Override
     public T getObject() throws Exception {
-        Class<?> innerClass = Class.forName(innerClassName);
         if (!innerClass.isInterface()) {
             throw new IllegalArgumentException("only support interface");
         }
         return (T) ExDataLoaderRegistry.getService(innerClass);
     }
 
+    @SneakyThrows
     @Override
     public Class<?> getObjectType() {
-        try {
-            return Class.forName(innerClassName);
-        } catch (ClassNotFoundException e) {
-            log.error("not found class", e);
-        }
-        return null;
+        return innerClass;
     }
 
     @Override

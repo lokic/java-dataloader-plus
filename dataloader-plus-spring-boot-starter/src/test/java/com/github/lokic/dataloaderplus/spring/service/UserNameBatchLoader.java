@@ -1,4 +1,4 @@
-package com.github.lokic.dataloaderplus.core.service;
+package com.github.lokic.dataloaderplus.spring.service;
 
 import com.github.lokic.dataloaderplus.core.MultiKeyMappedBatchLoader;
 import lombok.SneakyThrows;
@@ -17,7 +17,7 @@ public class UserNameBatchLoader implements MultiKeyMappedBatchLoader<String, St
     @SneakyThrows
     @Override
     public Map<String, String> doLoad(Set<String> set, BatchLoaderEnvironment batchLoaderEnvironment) {
-        log.info("UserNameBatchLoader start");
+        log.debug("UserNameBatchLoader start");
         return set.stream()
                 .collect(Collectors.toMap(Function.identity(), x -> "name:" + x));
     }

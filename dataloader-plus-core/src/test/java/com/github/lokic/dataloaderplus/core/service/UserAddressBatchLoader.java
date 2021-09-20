@@ -11,14 +11,12 @@ import java.util.function.Function;
 import java.util.stream.Collectors;
 
 @Slf4j
-public class UserNameBatchLoader implements MultiKeyMappedBatchLoader<String, String> {
-
+public class UserAddressBatchLoader implements MultiKeyMappedBatchLoader<String, String> {
 
     @SneakyThrows
     @Override
     public Map<String, String> doLoad(Set<String> set, BatchLoaderEnvironment batchLoaderEnvironment) {
-        log.info("UserNameBatchLoader start");
-        return set.stream()
-                .collect(Collectors.toMap(Function.identity(), x -> "name:" + x));
+        log.info("UserAddressBatchLoader start");
+        return set.stream().collect(Collectors.toMap(Function.identity(), x -> "address:" + x));
     }
 }

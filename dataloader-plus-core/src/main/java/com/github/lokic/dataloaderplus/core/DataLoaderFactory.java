@@ -15,14 +15,22 @@ public class DataLoaderFactory {
     private final Map<String, MultiKeyMappedBatchLoader<?, ?>> DATA_LOADER_CREATORS = new ConcurrentHashMap<>();
 
     public void addMultiKeyMappedBatchLoader(MultiKeyMappedBatchLoader<?, ?> dataLoaderProvider) {
-        DATA_LOADER_CREATORS.put(dataLoaderProvider.getClass().getName(), dataLoaderProvider);
+        addMultiKeyMappedBatchLoader(dataLoaderProvider.getClass().getName(), dataLoaderProvider);
+    }
+
+    public void addMultiKeyMappedBatchLoader(String name, MultiKeyMappedBatchLoader<?, ?> dataLoaderProvider) {
+        DATA_LOADER_CREATORS.put(name, dataLoaderProvider);
+    }
+
+    public MultiKeyMappedBatchLoader<?, ?> getMultiKeyMappedBatchLoader(String name) {
+        return DATA_LOADER_CREATORS.get(name);
     }
 
     public DataLoader<?, ?> create(String name, DataLoaderOptions options) {
         MultiKeyMappedBatchLoader<?, ?> loader = Optional.ofNullable(DATA_LOADER_CREATORS.get(name))
                 .orElseThrow(() -> new IllegalArgumentException("not found data loader supplier"));
 
-        return DataLoader.newMappedDataLoader(loader, options);
+        return org.dataloader.DataLoaderFactory.newMappedDataLoader(loader, options);
     }
 
 }
