@@ -29,7 +29,7 @@
         <dependency>
             <groupId>com.github.lokic</groupId>
             <artifactId>dataloader-plus-core</artifactId>
-            <version>${revision}</version>
+            <version>${project.version}</version>
         </dependency>
         <dependency>
             <groupId>org.springframework.boot</groupId>
