@@ -30,14 +30,14 @@ public class ServiceInvocationHandler implements InvocationHandler {
         ExDataLoaderRegistry registry = RegistryHolder.getRegistry();
         if (registry == null) {
             //see https://www.graphql-java.com/documentation/v16/batching/
-            throw new IllegalStateException("@DataLoaderService not in DataLoaderTemplate block " +
-                    "or call to a DataLoader in an asynchronous off thread");
+            throw new IllegalStateException("Registry not found. @DataLoaderService not in DataLoaderTemplate block " +
+                    "or call to a DataLoader in an asynchronous off thread.");
         }
         Class<? extends MultiKeyMappedBatchLoader<?, ?>> provider = batchLoaderMapping.computeIfAbsent(method, this::findBatchLoaderClass);
         int keyContextIndex = keyContextIndexMapping.computeIfAbsent(method, this::findContextIndex);
         DataLoader<Object, Object> dataLoader = registry.getOrRegisterDataLoader(provider);
         if (dataLoader == null) {
-            throw new IllegalStateException("not register MappedBatchLoaderWithContext = " + provider.getName() + " in registry");
+            throw new IllegalStateException("cannot register MappedBatchLoaderWithContext = " + provider.getName() + " in registry");
         }
         Object key = buildKey(args, keyContextIndex);
         Object keyContext = buildKeyContext(args, keyContextIndex);
