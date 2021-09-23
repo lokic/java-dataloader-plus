@@ -8,13 +8,11 @@ import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
-import org.springframework.context.annotation.Import;
 import org.springframework.context.annotation.Role;
 
 import static org.springframework.core.Ordered.LOWEST_PRECEDENCE;
 
 @AutoConfigureAfter({DataLoaderRegistrar.class})
-@Import(DataLoaderRegistrar.class)
 @Configuration
 public class DataLoaderAutoConfiguration {
 
