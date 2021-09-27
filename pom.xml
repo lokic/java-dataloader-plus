@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
     <version>${revision}</version>
     <name>java-dataloader-plus</name>
-    <description>java-dataloader-plus is an powerful enhanced toolkit of java-dataloader for simplify development.</description>
+    <description>java-dataloader-plus is a powerful enhanced toolkit of java-dataloader for simplify development.</description>
 
     <developers>
         <developer>
