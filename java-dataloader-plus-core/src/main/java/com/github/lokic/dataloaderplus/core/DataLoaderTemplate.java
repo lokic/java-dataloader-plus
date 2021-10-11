@@ -17,16 +17,15 @@ public class DataLoaderTemplate {
     }
 
     public <R> CompletableFuture<R> using(DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {
-        ExDataLoaderRegistry registry = RegistryHolder.getRegistry();
-        if (registry == null || !isEqualConfig(registry)) {
-            registry = new ExDataLoaderRegistry(options, factory,
-                    registry == null ? new DataLoaderRegistry() : registry.getRegistry());
-        }
-        return execute(registry, callback);
+        return using(null, callback);
     }
 
-    private boolean isEqualConfig(ExDataLoaderRegistry registry) {
-        return options == registry.getOptions() && factory == registry.getFactory();
+    public <R> CompletableFuture<R> using(ExDataLoaderRegistry registry, DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {
+        // 虽然options和factory可能与registry中的options和factory不同，但是以最外层的为准，所以复用已经存在的registry。
+        if (registry == null) {
+            registry = new ExDataLoaderRegistry(options, factory, new DataLoaderRegistry());
+        }
+        return execute(registry, callback);
     }
 
     private <R> CompletableFuture<R> execute(ExDataLoaderRegistry registry, DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {

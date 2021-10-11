@@ -2,12 +2,20 @@ package com.github.lokic.dataloaderplus.spring;
 
 import com.github.lokic.dataloaderplus.core.DataLoaderCallback;
 import com.github.lokic.dataloaderplus.core.DataLoaderTemplate;
+import com.github.lokic.dataloaderplus.core.RegistryHolder;
+import com.github.lokic.dataloaderplus.spring.annotation.DataLoadable;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.core.annotation.AnnotationUtils;
 
+import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DataLoaderInterceptor implements MethodInterceptor {
+
+    private final Map<Method, DataLoaderAttribute> attributeMapping = new ConcurrentHashMap<>();
 
     private final DataLoaderTemplateManager manager;
 
@@ -25,9 +33,26 @@ public class DataLoaderInterceptor implements MethodInterceptor {
             }
             throw new IllegalArgumentException("return type need CompletableFuture");
         };
+        DataLoaderAttribute attribute = attributeMapping.computeIfAbsent(invocation.getMethod(), this::parseAttribute);
+        DataLoaderTemplate template = manager.newTemplate(attribute);
+        return template.using(RegistryHolder.getRegistry(), callback);
+    }
 
-        DataLoaderTemplate template = manager.newTemplate();
-        return template.using(callback);
+    private DataLoaderAttribute parseAttribute(Method method) {
+        DataLoadable dataLoadable = AnnotationUtils.findAnnotation(method, DataLoadable.class);
+        if (dataLoadable == null) {
+            throw new IllegalStateException("not found @DataLoadable at method " + method.getName());
+        }
+        return parseAttribute(dataLoadable);
+    }
+
+    private DataLoaderAttribute parseAttribute(DataLoadable dataLoadable) {
+        DataLoaderAttribute attribute = new DataLoaderAttribute();
+        attribute.setBatchingEnabled(dataLoadable.batchingEnabled());
+        attribute.setCachingEnabled(dataLoadable.cachingEnabled());
+        attribute.setCachingExceptionsEnabled(dataLoadable.cachingExceptionsEnabled());
+        attribute.setMaxBatchSize(dataLoadable.maxBatchSize());
+        return attribute;
     }
 
 }
