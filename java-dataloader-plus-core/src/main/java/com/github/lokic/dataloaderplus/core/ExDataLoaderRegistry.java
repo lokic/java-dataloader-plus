@@ -39,6 +39,18 @@ public class ExDataLoaderRegistry implements AutoCloseable {
         this.options = options;
     }
 
+    DataLoaderOptions getOptions() {
+        return options;
+    }
+
+    DataLoaderFactory getFactory() {
+        return factory;
+    }
+
+    DataLoaderRegistry getRegistry() {
+        return registry;
+    }
+
     /**
      * 获取对应的 {@link DataLoader}，如果没有获取到则创建一个并返回
      *

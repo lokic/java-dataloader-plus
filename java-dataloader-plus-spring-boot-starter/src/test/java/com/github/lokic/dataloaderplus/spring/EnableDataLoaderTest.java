@@ -1,5 +1,6 @@
 package com.github.lokic.dataloaderplus.spring;
 
+import com.github.lokic.dataloaderplus.core.DataLoaderFactory;
 import com.github.lokic.dataloaderplus.core.DataLoaderTemplate;
 import com.github.lokic.dataloaderplus.spring.annotation.EnableDataLoader;
 import com.github.lokic.dataloaderplus.spring.service.UserService;
@@ -21,7 +22,8 @@ public class EnableDataLoaderTest {
     @Test
     public void test_inject() {
         Assertions.assertThat(context.getBeansOfType(UserService.class)).hasSize(1);
-        Assertions.assertThat(context.getBeansOfType(DataLoaderTemplate.class)).hasSize(1);
+        Assertions.assertThat(context.getBeansOfType(DataLoaderFactory.class)).hasSize(1);
+        Assertions.assertThat(context.getBeansOfType(DataLoaderTemplateManager.class)).hasSize(1);
     }
 
 

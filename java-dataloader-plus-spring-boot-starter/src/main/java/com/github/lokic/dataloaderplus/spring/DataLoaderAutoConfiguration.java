@@ -30,19 +30,18 @@ public class DataLoaderAutoConfiguration {
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @Bean
     public DataLoaderInterceptor dataLoadableInterceptor() {
-        return new DataLoaderInterceptor(dataLoaderTemplate());
+        return new DataLoaderInterceptor(dataLoaderTemplateManager());
     }
-
 
     @Bean
-    public DataLoaderTemplate dataLoaderTemplate() {
-        TemplateConfig templateConfig = TemplateConfig.builder()
-                .options(DataLoaderOptions.newOptions())
-                .factory(new DataLoaderFactory())
-                .build();
-        return new DataLoaderTemplate(templateConfig);
+    public DataLoaderTemplateManager dataLoaderTemplateManager() {
+        return new DataLoaderTemplateManager(DataLoaderOptions.newOptions(), dataLoaderFactory());
     }
 
+    @Bean
+    public DataLoaderFactory dataLoaderFactory() {
+        return new DataLoaderFactory();
+    }
 
     @Bean
     public BatchLoaderBeanPostProcessor dataLoaderTemplateBeanPostProcessor() {

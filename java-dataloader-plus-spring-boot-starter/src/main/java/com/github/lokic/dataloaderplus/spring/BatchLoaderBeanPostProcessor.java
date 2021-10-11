@@ -1,6 +1,6 @@
 package com.github.lokic.dataloaderplus.spring;
 
-import com.github.lokic.dataloaderplus.core.DataLoaderTemplate;
+import com.github.lokic.dataloaderplus.core.DataLoaderFactory;
 import com.github.lokic.dataloaderplus.core.MultiKeyMappedBatchLoader;
 import lombok.SneakyThrows;
 import org.springframework.beans.BeansException;
@@ -26,8 +26,8 @@ public class BatchLoaderBeanPostProcessor extends InstantiationAwareBeanPostProc
     @Override
     public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
         if (bean instanceof MultiKeyMappedBatchLoader) {
-            DataLoaderTemplate dataLoaderTemplate = beanFactory.getBean(DataLoaderTemplate.class);
-            dataLoaderTemplate.addMultiKeyMappedBatchLoader((MultiKeyMappedBatchLoader<?, ?>) bean);
+            DataLoaderFactory dataLoaderFactory = beanFactory.getBean(DataLoaderFactory.class);
+            dataLoaderFactory.addMultiKeyMappedBatchLoader((MultiKeyMappedBatchLoader<?, ?>) bean);
         }
         return true;
     }

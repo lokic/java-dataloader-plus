@@ -16,23 +16,17 @@ public class DataLoaderTemplate {
         this.factory = options.getFactory();
     }
 
-    public void addMultiKeyMappedBatchLoader(MultiKeyMappedBatchLoader<?, ?> dataLoaderProvider) {
-        factory.addMultiKeyMappedBatchLoader(dataLoaderProvider.getClass().getName(), dataLoaderProvider);
-    }
-
     public <R> CompletableFuture<R> using(DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {
-        ExDataLoaderRegistry registry = new ExDataLoaderRegistry(options, factory, new DataLoaderRegistry());
+        ExDataLoaderRegistry registry = RegistryHolder.getRegistry();
+        if (registry == null || !isEqualConfig(registry)) {
+            registry = new ExDataLoaderRegistry(options, factory,
+                    registry == null ? new DataLoaderRegistry() : registry.getRegistry());
+        }
         return execute(registry, callback);
     }
 
-    public <R> CompletableFuture<R> using(DataLoaderOptions options, DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {
-        ExDataLoaderRegistry registry = new ExDataLoaderRegistry(options, factory, new DataLoaderRegistry());
-        return execute(registry, callback);
-    }
-
-
-    public <R> CompletableFuture<R> using(ExDataLoaderRegistry registry, DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {
-        return execute(registry, callback);
+    private boolean isEqualConfig(ExDataLoaderRegistry registry) {
+        return options == registry.getOptions() && factory == registry.getFactory();
     }
 
     private <R> CompletableFuture<R> execute(ExDataLoaderRegistry registry, DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {
