@@ -1,5 +1,7 @@
 package com.github.lokic.dataloaderplus.spring.annotation;
 
+import com.github.lokic.dataloaderplus.core.Propagation;
+
 import java.lang.annotation.*;
 
 @Retention(RetentionPolicy.RUNTIME)
@@ -26,5 +28,7 @@ public @interface DataLoadable {
      * @see org.dataloader.DataLoaderOptions#maxBatchSize()
      */
     int maxBatchSize() default -1;
+
+    Propagation propagation() default Propagation.REQUIRED;
 
 }

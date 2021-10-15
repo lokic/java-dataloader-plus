@@ -17,10 +17,7 @@ public class DataLoaderTemplateManager {
     }
 
     public DataLoaderTemplate newTemplate(DataLoaderAttribute attribute) {
-        TemplateConfig config = TemplateConfig.builder()
-                .options(parseOptions(attribute))
-                .factory(defaultFactory)
-                .build();
+        TemplateConfig config = new TemplateConfig(parseOptions(attribute), defaultFactory, attribute.propagation());
         return new DataLoaderTemplate(config);
     }
 

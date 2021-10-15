@@ -2,7 +2,7 @@ package com.github.lokic.dataloaderplus.core.proxy;
 
 import com.github.lokic.dataloaderplus.core.ExDataLoaderRegistry;
 import com.github.lokic.dataloaderplus.core.MultiKeyMappedBatchLoader;
-import com.github.lokic.dataloaderplus.core.RegistryHolder;
+import com.github.lokic.dataloaderplus.core.RegistryManager;
 import com.github.lokic.dataloaderplus.core.annotation.DataLoaderMapping;
 import com.github.lokic.dataloaderplus.core.annotation.KeyContext;
 import com.github.lokic.dataloaderplus.core.kits.Arrays;
@@ -27,7 +27,7 @@ public class ServiceInvocationHandler implements InvocationHandler {
 
     @Override
     public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
-        ExDataLoaderRegistry registry = RegistryHolder.getRegistry();
+        ExDataLoaderRegistry registry = RegistryManager.getRegistry();
         if (registry == null) {
             //see https://www.graphql-java.com/documentation/v16/batching/
             throw new IllegalStateException("Registry not found. @DataLoaderService not in DataLoaderTemplate block " +

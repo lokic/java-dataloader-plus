@@ -28,7 +28,7 @@ public class DataLoaderFactory {
 
     public DataLoader<?, ?> create(String name, DataLoaderOptions options) {
         MultiKeyMappedBatchLoader<?, ?> loader = Optional.ofNullable(DATA_LOADER_CREATORS.get(name))
-                .orElseThrow(() -> new IllegalArgumentException("not found data loader supplier"));
+                .orElseThrow(() -> new IllegalArgumentException("not found data loader supplier, name = " + name));
 
         return org.dataloader.DataLoaderFactory.newMappedDataLoader(loader, options);
     }

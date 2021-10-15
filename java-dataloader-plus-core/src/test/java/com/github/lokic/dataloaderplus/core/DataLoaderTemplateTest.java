@@ -43,7 +43,7 @@ public class DataLoaderTemplateTest {
         factory.addMultiKeyMappedBatchLoader(UserNameBatchLoader.class.getName(), userNameBatchLoader);
         factory.addMultiKeyMappedBatchLoader(UserAddressBatchLoader.class.getName(), userAddressBatchLoader);
 
-        templateConfig = TemplateConfig.builder().options(DataLoaderOptions.newOptions()).factory(factory).build();
+        templateConfig = new TemplateConfig(DataLoaderOptions.newOptions(), factory, Propagation.REQUIRED);
         template = new DataLoaderTemplate(templateConfig);
 
     }

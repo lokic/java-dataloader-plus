@@ -39,6 +39,12 @@ public class ExDataLoaderRegistry implements AutoCloseable {
         this.options = options;
     }
 
+    protected ExDataLoaderRegistry(@NonNull ExDataLoaderRegistry exRegistry) {
+        this.registry = exRegistry.registry;
+        this.factory = exRegistry.factory;
+        this.options = exRegistry.options;
+    }
+
     /**
      * 获取对应的 {@link DataLoader}，如果没有获取到则创建一个并返回
      *
@@ -59,7 +65,7 @@ public class ExDataLoaderRegistry implements AutoCloseable {
         dataLoader.dispatch()
                 .thenAccept(li -> {
                     if (!li.isEmpty()) {
-                        RegistryHolder.tryDispatchAll();
+                        RegistryManager.tryDispatchAll();
                     }
                 });
     }

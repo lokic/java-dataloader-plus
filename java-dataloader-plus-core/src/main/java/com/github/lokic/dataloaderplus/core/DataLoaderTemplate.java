@@ -10,10 +10,12 @@ public class DataLoaderTemplate {
 
     private final DataLoaderOptions options;
     private final DataLoaderFactory factory;
+    private final Propagation propagation;
 
     public DataLoaderTemplate(TemplateConfig options) {
         this.options = options.getOptions();
         this.factory = options.getFactory();
+        this.propagation = options.getPropagation();
     }
 
     public <R> CompletableFuture<R> using(DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {
@@ -22,34 +24,86 @@ public class DataLoaderTemplate {
 
     public <R> CompletableFuture<R> using(ExDataLoaderRegistry registry, DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {
         // 虽然options和factory可能与registry中的options和factory不同，但是以最外层的为准，所以复用已经存在的registry。
-        if (registry == null) {
-            registry = new ExDataLoaderRegistry(options, factory, new DataLoaderRegistry());
+        ExDataLoaderRegistry newRegistry = prepareRegistry(registry);
+        return execute(newRegistry, callback);
+    }
+
+    private ExDataLoaderRegistry prepareRegistry(ExDataLoaderRegistry registry) {
+        if (propagation == Propagation.REQUIRED) {
+            if (registry == null) {
+                return new ExDataLoaderRegistry(options, factory, new DataLoaderRegistry());
+            } else {
+                return new ExDataLoaderRegistry(registry);
+            }
+        } else if (propagation == Propagation.REQUIRES_NEW) {
+            return new ExDataLoaderRegistry(options, factory, new DataLoaderRegistry());
         }
-        return execute(registry, callback);
+        throw new UnsupportedOperationException("unsupported propagation");
     }
 
     private <R> CompletableFuture<R> execute(ExDataLoaderRegistry registry, DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {
-        boolean isOutermost = false;
+        RegistryStatus registryStatus = getRegistryStatus(registry);
         try {
-            if (RegistryHolder.getRegistry() == null) {
-                isOutermost = true;
-                RegistryHolder.setRegistry(registry);
-            } else {
-                if (RegistryHolder.getRegistry() != registry) {
-                    throw new IllegalArgumentException("register must be same");
-                }
-            }
-            CompletableFuture<R> future = callback.doInDataLoader(registry);
-            if (isOutermost) {
-                RegistryHolder.tryDispatchAll();
-                return CompletableFutures.supply(future::join);
-            }
-            return future;
+            CompletableFuture<R> future = callback.invokeInDataLoader(registryStatus.getRegistry());
+            afterInvoke(registryStatus);
+            return processResult(registryStatus, future);
         } finally {
-            // 如果是最外层设置registry的方法，则最后需要清除registry
-            if (isOutermost) {
-                RegistryHolder.clear();
-            }
+            afterCompletion(registryStatus);
         }
     }
+
+    private RegistryStatus getRegistryStatus(ExDataLoaderRegistry registry) {
+        ExDataLoaderRegistry suspendedRegistry = null;
+        if (RegistryManager.isActive()) {
+            if (RegistryManager.getRegistry() == registry) {
+                throw new IllegalStateException("registry must be not the same");
+            }
+            suspendedRegistry = RegistryManager.suspend();
+        }
+        RegistryManager.init(registry);
+        return new RegistryStatus(registry, suspendedRegistry);
+    }
+
+    private void afterInvoke(RegistryStatus status) {
+        RegistryManager.tryDispatchAll(status.getRegistry());
+    }
+
+    private void afterCompletion(RegistryStatus status) {
+        if (status.isFirstNest()) {
+            // 如果是最外层设置registry的方法，则最后需要清除registry
+            RegistryManager.clear();
+        } else {
+            RegistryManager.resume(status.getSuspendedRegistry());
+        }
+    }
+
+    private <R> CompletableFuture<R> processResult(RegistryStatus status, CompletableFuture<R> future) {
+        if (status.isFirstNest()) {
+            return CompletableFutures.supply(future::join);
+        }
+        return future;
+    }
+
+    private static class RegistryStatus {
+        private final ExDataLoaderRegistry registry;
+        private final ExDataLoaderRegistry suspendedRegistry;
+
+        public RegistryStatus(ExDataLoaderRegistry registry, ExDataLoaderRegistry suspendedRegistry) {
+            this.registry = registry;
+            this.suspendedRegistry = suspendedRegistry;
+        }
+
+        public ExDataLoaderRegistry getRegistry() {
+            return registry;
+        }
+
+        public ExDataLoaderRegistry getSuspendedRegistry() {
+            return suspendedRegistry;
+        }
+
+        public boolean isFirstNest() {
+            return suspendedRegistry == null;
+        }
+    }
+
 }

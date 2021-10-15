@@ -2,7 +2,7 @@ package com.github.lokic.dataloaderplus.spring;
 
 import com.github.lokic.dataloaderplus.core.DataLoaderCallback;
 import com.github.lokic.dataloaderplus.core.DataLoaderTemplate;
-import com.github.lokic.dataloaderplus.core.RegistryHolder;
+import com.github.lokic.dataloaderplus.core.RegistryManager;
 import com.github.lokic.dataloaderplus.spring.annotation.DataLoadable;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
@@ -35,7 +35,7 @@ public class DataLoaderInterceptor implements MethodInterceptor {
         };
         DataLoaderAttribute attribute = attributeMapping.computeIfAbsent(invocation.getMethod(), this::parseAttribute);
         DataLoaderTemplate template = manager.newTemplate(attribute);
-        return template.using(RegistryHolder.getRegistry(), callback);
+        return template.using(RegistryManager.getRegistry(), callback);
     }
 
     private DataLoaderAttribute parseAttribute(Method method) {
@@ -43,16 +43,7 @@ public class DataLoaderInterceptor implements MethodInterceptor {
         if (dataLoadable == null) {
             throw new IllegalStateException("not found @DataLoadable at method " + method.getName());
         }
-        return parseAttribute(dataLoadable);
-    }
-
-    private DataLoaderAttribute parseAttribute(DataLoadable dataLoadable) {
-        DataLoaderAttribute attribute = new DataLoaderAttribute();
-        attribute.setBatchingEnabled(dataLoadable.batchingEnabled());
-        attribute.setCachingEnabled(dataLoadable.cachingEnabled());
-        attribute.setCachingExceptionsEnabled(dataLoadable.cachingExceptionsEnabled());
-        attribute.setMaxBatchSize(dataLoadable.maxBatchSize());
-        return attribute;
+        return DataLoaderAttribute.parseAttribute(dataLoadable);
     }
 
 }
