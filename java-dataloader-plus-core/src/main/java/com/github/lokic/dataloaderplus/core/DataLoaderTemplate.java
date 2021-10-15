@@ -23,7 +23,6 @@ public class DataLoaderTemplate {
     }
 
     public <R> CompletableFuture<R> using(ExDataLoaderRegistry registry, DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {
-        // 虽然options和factory可能与registry中的options和factory不同，但是以最外层的为准，所以复用已经存在的registry。
         ExDataLoaderRegistry newRegistry = prepareRegistry(registry);
         return execute(newRegistry, callback);
     }
@@ -33,6 +32,7 @@ public class DataLoaderTemplate {
             if (registry == null) {
                 return new ExDataLoaderRegistry(options, factory, new DataLoaderRegistry());
             } else {
+                // 虽然options和factory可能与registry中的options和factory不同，以最外层的为准，所以复用已经存在的registry。
                 return new ExDataLoaderRegistry(registry);
             }
         } else if (propagation == Propagation.REQUIRES_NEW) {
