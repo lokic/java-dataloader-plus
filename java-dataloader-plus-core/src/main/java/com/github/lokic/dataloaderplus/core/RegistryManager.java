@@ -16,25 +16,57 @@ public class RegistryManager {
         return CURRENT_HOLDER.get();
     }
 
-    public static ExDataLoaderRegistry suspend() {
+    /**
+     * 当前线程设置ExDataLoaderRegistry
+     *
+     * @param initRegistry
+     */
+    private static void init(ExDataLoaderRegistry initRegistry) {
+        CURRENT_HOLDER.set(initRegistry);
+    }
+
+    /**
+     * 挂起当前ExDataLoaderRegistry，并返回挂起的ExDataLoaderRegistry
+     *
+     * @return
+     */
+    private static ExDataLoaderRegistry suspend() {
         ExDataLoaderRegistry suspendRegistry = CURRENT_HOLDER.get();
         CURRENT_HOLDER.remove();
         return suspendRegistry;
     }
 
+    /**
+     * 初始化ExDataLoaderRegistry，如果有当前活跃则挂起当前活跃的ExDataLoaderRegistry并初始化
+     *
+     * @param initRegistry
+     * @return 如果有挂起的ExDataLoaderRegistry则返回挂起的ExDataLoaderRegistry，没有则返回null
+     */
+    public static ExDataLoaderRegistry initAndSuspend(ExDataLoaderRegistry initRegistry) {
+        ExDataLoaderRegistry suspendedRegistry = null;
+        if (RegistryManager.isActive()) {
+            suspendedRegistry = RegistryManager.suspend();
+        }
+        RegistryManager.init(initRegistry);
+        return suspendedRegistry;
+    }
+
+
+    /**
+     * 唤起{@code suspendedRegistry}，作为当前活跃的ExDataLoaderRegistry
+     *
+     * @param suspendedRegistry
+     */
     public static void resume(ExDataLoaderRegistry suspendedRegistry) {
         CURRENT_HOLDER.set(suspendedRegistry);
     }
 
-    /**
-     * 当前线程设置ExDataLoaderRegistry
-     *
-     * @param registry
-     */
-    public static void init(ExDataLoaderRegistry registry) {
-        CURRENT_HOLDER.set(registry);
-    }
 
+    /**
+     * 当前是否有活跃的ExDataLoaderRegistry
+     *
+     * @return
+     */
     public static boolean isActive() {
         return CURRENT_HOLDER.get() != null;
     }

@@ -34,7 +34,7 @@ public class DataLoaderTemplate {
                     return newExDataLoaderRegistry();
                 } else {
                     // 虽然options和factory可能与registry中的options和factory不同，以最外层的为准，所以复用已经存在的registry。
-                    return new ExDataLoaderRegistry(registry);
+                    return registry;
                 }
             case REQUIRES_NEW:
                 return newExDataLoaderRegistry();
@@ -59,18 +59,12 @@ public class DataLoaderTemplate {
     }
 
     private RegistryStatus getRegistryStatus(ExDataLoaderRegistry registry) {
-        ExDataLoaderRegistry suspendedRegistry = null;
-        if (RegistryManager.isActive()) {
-            if (RegistryManager.getRegistry() == registry) {
-                throw new IllegalStateException("registry must be not the same");
-            }
-            suspendedRegistry = RegistryManager.suspend();
-        }
-        RegistryManager.init(registry);
+        ExDataLoaderRegistry suspendedRegistry = RegistryManager.initAndSuspend(registry);
         return new RegistryStatus(registry, suspendedRegistry);
     }
 
     private void afterInvoke(RegistryStatus status) {
+        // 每一个execute都关注于自己的dispatchAll
         RegistryManager.tryDispatchAll(status.getRegistry());
     }
 
@@ -91,7 +85,13 @@ public class DataLoaderTemplate {
     }
 
     private static class RegistryStatus {
+        /**
+         * 当前的活跃的ExDataLoaderRegistry
+         */
         private final ExDataLoaderRegistry registry;
+        /**
+         * 挂起的ExDataLoaderRegistry
+         */
         private final ExDataLoaderRegistry suspendedRegistry;
 
         public RegistryStatus(ExDataLoaderRegistry registry, ExDataLoaderRegistry suspendedRegistry) {
@@ -107,6 +107,11 @@ public class DataLoaderTemplate {
             return suspendedRegistry;
         }
 
+        /**
+         * 是否是第一层嵌套，适用于DataLoaderTemplate多层嵌套的场景
+         *
+         * @return
+         */
         public boolean isFirstNest() {
             return suspendedRegistry == null;
         }
