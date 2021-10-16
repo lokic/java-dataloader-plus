@@ -1,6 +1,5 @@
 package com.github.lokic.dataloaderplus.core;
 
-import lombok.NonNull;
 import org.dataloader.DataLoaderOptions;
 
 import java.util.Objects;

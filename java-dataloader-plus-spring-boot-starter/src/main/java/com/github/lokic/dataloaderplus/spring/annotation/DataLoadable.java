@@ -29,6 +29,9 @@ public @interface DataLoadable {
      */
     int maxBatchSize() default -1;
 
+    /**
+     * @see Propagation
+     */
     Propagation propagation() default Propagation.REQUIRED;
 
 }

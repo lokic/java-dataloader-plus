@@ -15,7 +15,7 @@ import java.util.concurrent.ConcurrentHashMap;
 
 public class DataLoaderInterceptor implements MethodInterceptor {
 
-    private final Map<Method, DataLoaderAttribute> attributeMapping = new ConcurrentHashMap<>();
+    private final Map<Method, DataLoadableAttribute> attributeMapping = new ConcurrentHashMap<>();
 
     private final DataLoaderTemplateManager manager;
 
@@ -33,17 +33,17 @@ public class DataLoaderInterceptor implements MethodInterceptor {
             }
             throw new IllegalArgumentException("return type need CompletableFuture");
         };
-        DataLoaderAttribute attribute = attributeMapping.computeIfAbsent(invocation.getMethod(), this::parseAttribute);
+        DataLoadableAttribute attribute = attributeMapping.computeIfAbsent(invocation.getMethod(), this::parseAttribute);
         DataLoaderTemplate template = manager.newTemplate(attribute);
         return template.using(RegistryManager.getRegistry(), callback);
     }
 
-    private DataLoaderAttribute parseAttribute(Method method) {
+    private DataLoadableAttribute parseAttribute(Method method) {
         DataLoadable dataLoadable = AnnotationUtils.findAnnotation(method, DataLoadable.class);
         if (dataLoadable == null) {
             throw new IllegalStateException("not found @DataLoadable at method " + method.getName());
         }
-        return DataLoaderAttribute.parseAttribute(dataLoadable);
+        return DataLoadableAttribute.parseAttribute(dataLoadable);
     }
 
 }

@@ -5,7 +5,7 @@ package com.github.lokic.dataloaderplus.core;
  */
 public class RegistryManager {
 
-    public static final ThreadLocal<ExDataLoaderRegistry> HOLDER = new ThreadLocal<>();
+    public static final ThreadLocal<ExDataLoaderRegistry> CURRENT_HOLDER = new ThreadLocal<>();
 
     /**
      * 获取当前线程的ExDataLoaderRegistry
@@ -13,17 +13,17 @@ public class RegistryManager {
      * @return
      */
     public static ExDataLoaderRegistry getRegistry() {
-        return HOLDER.get();
+        return CURRENT_HOLDER.get();
     }
 
     public static ExDataLoaderRegistry suspend() {
-        ExDataLoaderRegistry suspendRegistry = HOLDER.get();
-        HOLDER.remove();
+        ExDataLoaderRegistry suspendRegistry = CURRENT_HOLDER.get();
+        CURRENT_HOLDER.remove();
         return suspendRegistry;
     }
 
     public static void resume(ExDataLoaderRegistry suspendedRegistry) {
-        HOLDER.set(suspendedRegistry);
+        CURRENT_HOLDER.set(suspendedRegistry);
     }
 
     /**
@@ -32,19 +32,19 @@ public class RegistryManager {
      * @param registry
      */
     public static void init(ExDataLoaderRegistry registry) {
-        HOLDER.set(registry);
+        CURRENT_HOLDER.set(registry);
     }
 
     public static boolean isActive() {
-        return HOLDER.get() != null;
+        return CURRENT_HOLDER.get() != null;
     }
 
     /**
      * 清除当前线程的ExDataLoaderRegistry
      */
     public static void clear() {
-        HOLDER.get().close();
-        HOLDER.remove();
+        CURRENT_HOLDER.get().close();
+        CURRENT_HOLDER.remove();
     }
 
     /**

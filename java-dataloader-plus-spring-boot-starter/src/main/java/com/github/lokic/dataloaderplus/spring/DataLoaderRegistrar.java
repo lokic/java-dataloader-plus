@@ -77,6 +77,7 @@ public class DataLoaderRegistrar implements ResourceLoaderAware, ImportBeanDefin
         beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
         beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
         beanDefinition.setPrimary(true);
+        // 此处必须是原始class的名字，后面字节码增强之后，实现的类名会改变
         registry.registerBeanDefinition(clazz.getName(), beanDefinition);
     }
 

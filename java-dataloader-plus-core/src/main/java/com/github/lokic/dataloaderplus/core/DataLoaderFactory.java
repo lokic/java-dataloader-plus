@@ -14,10 +14,6 @@ public class DataLoaderFactory {
 
     private final Map<String, MultiKeyMappedBatchLoader<?, ?>> DATA_LOADER_CREATORS = new ConcurrentHashMap<>();
 
-    public void addMultiKeyMappedBatchLoader(MultiKeyMappedBatchLoader<?, ?> dataLoaderProvider) {
-        addMultiKeyMappedBatchLoader(dataLoaderProvider.getClass().getName(), dataLoaderProvider);
-    }
-
     public void addMultiKeyMappedBatchLoader(String name, MultiKeyMappedBatchLoader<?, ?> dataLoaderProvider) {
         DATA_LOADER_CREATORS.put(name, dataLoaderProvider);
     }

@@ -16,16 +16,16 @@ public class DataLoaderTemplateManager {
         this.defaultFactory = defaultFactory;
     }
 
-    public DataLoaderTemplate newTemplate(DataLoaderAttribute attribute) {
+    public DataLoaderTemplate newTemplate(DataLoadableAttribute attribute) {
         TemplateConfig config = new TemplateConfig(parseOptions(attribute), defaultFactory, attribute.propagation());
         return new DataLoaderTemplate(config);
     }
 
-    private DataLoaderOptions parseOptions(DataLoaderAttribute attribute) {
-        return isEqualsDataLoaderAttribute(attribute) ? defaultOptions : createOptions(attribute);
+    private DataLoaderOptions parseOptions(DataLoadableAttribute attribute) {
+        return isEqualsDefaultOptions(attribute) ? defaultOptions : createOptions(attribute);
     }
 
-    private DataLoaderOptions createOptions(DataLoaderAttribute attribute) {
+    private DataLoaderOptions createOptions(DataLoadableAttribute attribute) {
         DataLoaderOptions options = new DataLoaderOptions();
         options.setBatchingEnabled(attribute.batchingEnabled());
         options.setCachingEnabled(attribute.cachingEnabled());
@@ -35,7 +35,7 @@ public class DataLoaderTemplateManager {
     }
 
 
-    private boolean isEqualsDataLoaderAttribute(DataLoaderAttribute attribute) {
+    private boolean isEqualsDefaultOptions(DataLoadableAttribute attribute) {
         return Objects.equals(defaultOptions.batchingEnabled(), attribute.batchingEnabled())
                 && Objects.equals(defaultOptions.cachingEnabled(), attribute.cachingEnabled())
                 && Objects.equals(defaultOptions.cachingExceptionsEnabled(), attribute.cachingExceptionsEnabled())

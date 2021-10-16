@@ -4,7 +4,7 @@ package com.github.lokic.dataloaderplus.spring;
 import com.github.lokic.dataloaderplus.core.Propagation;
 import com.github.lokic.dataloaderplus.spring.annotation.DataLoadable;
 
-public class DataLoaderAttribute {
+public class DataLoadableAttribute {
 
     /**
      * @see DataLoadable#batchingEnabled()
@@ -26,6 +26,9 @@ public class DataLoaderAttribute {
      */
     private int maxBatchSize;
 
+    /**
+     * @see DataLoadable#propagation()
+     */
     private Propagation propagation;
 
     public boolean batchingEnabled() {
@@ -68,8 +71,8 @@ public class DataLoaderAttribute {
         this.propagation = propagation;
     }
 
-    public static DataLoaderAttribute parseAttribute(DataLoadable dataLoadable) {
-        DataLoaderAttribute attribute = new DataLoaderAttribute();
+    public static DataLoadableAttribute parseAttribute(DataLoadable dataLoadable) {
+        DataLoadableAttribute attribute = new DataLoadableAttribute();
         attribute.setBatchingEnabled(dataLoadable.batchingEnabled());
         attribute.setCachingEnabled(dataLoadable.cachingEnabled());
         attribute.setCachingExceptionsEnabled(dataLoadable.cachingExceptionsEnabled());

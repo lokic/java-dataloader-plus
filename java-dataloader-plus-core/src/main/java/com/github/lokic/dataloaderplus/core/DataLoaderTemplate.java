@@ -28,17 +28,23 @@ public class DataLoaderTemplate {
     }
 
     private ExDataLoaderRegistry prepareRegistry(ExDataLoaderRegistry registry) {
-        if (propagation == Propagation.REQUIRED) {
-            if (registry == null) {
-                return new ExDataLoaderRegistry(options, factory, new DataLoaderRegistry());
-            } else {
-                // 虽然options和factory可能与registry中的options和factory不同，以最外层的为准，所以复用已经存在的registry。
-                return new ExDataLoaderRegistry(registry);
-            }
-        } else if (propagation == Propagation.REQUIRES_NEW) {
-            return new ExDataLoaderRegistry(options, factory, new DataLoaderRegistry());
+        switch (propagation) {
+            case REQUIRED:
+                if (registry == null) {
+                    return newExDataLoaderRegistry();
+                } else {
+                    // 虽然options和factory可能与registry中的options和factory不同，以最外层的为准，所以复用已经存在的registry。
+                    return new ExDataLoaderRegistry(registry);
+                }
+            case REQUIRES_NEW:
+                return newExDataLoaderRegistry();
+            default:
+                throw new UnsupportedOperationException("unsupported propagation");
         }
-        throw new UnsupportedOperationException("unsupported propagation");
+    }
+
+    private ExDataLoaderRegistry newExDataLoaderRegistry() {
+        return new ExDataLoaderRegistry(options, factory, new DataLoaderRegistry());
     }
 
     private <R> CompletableFuture<R> execute(ExDataLoaderRegistry registry, DataLoaderCallback<CompletableFuture<R>> callback) throws Throwable {
