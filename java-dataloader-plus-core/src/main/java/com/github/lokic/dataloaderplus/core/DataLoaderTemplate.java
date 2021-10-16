@@ -64,8 +64,9 @@ public class DataLoaderTemplate {
     }
 
     private void afterInvoke(RegistryStatus status) {
-        // 每一个execute都关注于自己的dispatchAll
-        RegistryManager.tryDispatchAll(status.getRegistry());
+        if (status.getRegistry() != status.getSuspendedRegistry()) {
+            RegistryManager.tryDispatchAll(status.getRegistry());
+        }
     }
 
     private void afterCompletion(RegistryStatus status) {
@@ -109,7 +110,6 @@ public class DataLoaderTemplate {
 
         /**
          * 是否是第一层嵌套，适用于DataLoaderTemplate多层嵌套的场景
-         *
          * @return
          */
         public boolean isFirstNest() {
