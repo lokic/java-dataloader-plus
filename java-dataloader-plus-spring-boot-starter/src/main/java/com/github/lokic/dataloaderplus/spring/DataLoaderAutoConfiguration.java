@@ -1,17 +1,13 @@
 package com.github.lokic.dataloaderplus.spring;
 
 import com.github.lokic.dataloaderplus.core.DataLoaderFactory;
-import com.github.lokic.dataloaderplus.core.DataLoaderTemplate;
-import com.github.lokic.dataloaderplus.core.TemplateConfig;
 import org.dataloader.DataLoaderOptions;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Role;
-import org.springframework.core.annotation.Order;
 
-import static org.springframework.core.Ordered.HIGHEST_PRECEDENCE;
 import static org.springframework.core.Ordered.LOWEST_PRECEDENCE;
 
 @AutoConfigureAfter({DataLoaderRegistrar.class})
@@ -36,8 +32,8 @@ public class DataLoaderAutoConfiguration {
     }
 
     @Bean
-    public DataLoaderTemplateManager dataLoaderTemplateManager() {
-        return new DataLoaderTemplateManager(DataLoaderOptions.newOptions(), dataLoaderFactory());
+    public DataLoaderTemplateFactory dataLoaderTemplateManager() {
+        return new DataLoaderTemplateFactory(DataLoaderOptions.newOptions(), dataLoaderFactory());
     }
 
     @Bean

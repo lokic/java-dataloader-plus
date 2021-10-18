@@ -7,16 +7,16 @@ import org.dataloader.DataLoaderOptions;
 
 import java.util.Objects;
 
-public class DataLoaderTemplateManager {
+public class DataLoaderTemplateFactory {
     private final DataLoaderOptions defaultOptions;
     private final DataLoaderFactory defaultFactory;
 
-    public DataLoaderTemplateManager(DataLoaderOptions defaultOptions, DataLoaderFactory defaultFactory) {
+    public DataLoaderTemplateFactory(DataLoaderOptions defaultOptions, DataLoaderFactory defaultFactory) {
         this.defaultOptions = defaultOptions;
         this.defaultFactory = defaultFactory;
     }
 
-    public DataLoaderTemplate newTemplate(DataLoadableAttribute attribute) {
+    public DataLoaderTemplate createTemplate(DataLoadableAttribute attribute) {
         TemplateConfig config = new TemplateConfig(parseOptions(attribute), defaultFactory, attribute.propagation());
         return new DataLoaderTemplate(config);
     }

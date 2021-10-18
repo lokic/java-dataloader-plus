@@ -31,19 +31,19 @@ public class DataLoaderTemplate {
         switch (propagation) {
             case REQUIRED:
                 if (registry == null) {
-                    return newExDataLoaderRegistry();
+                    return createExDataLoaderRegistry();
                 } else {
                     // 虽然options和factory可能与registry中的options和factory不同，以最外层的为准，所以复用已经存在的registry。
                     return registry;
                 }
             case REQUIRES_NEW:
-                return newExDataLoaderRegistry();
+                return createExDataLoaderRegistry();
             default:
                 throw new UnsupportedOperationException("unsupported propagation");
         }
     }
 
-    private ExDataLoaderRegistry newExDataLoaderRegistry() {
+    private ExDataLoaderRegistry createExDataLoaderRegistry() {
         return new ExDataLoaderRegistry(options, factory, new DataLoaderRegistry());
     }
 

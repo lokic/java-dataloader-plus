@@ -17,9 +17,9 @@ public class DataLoaderInterceptor implements MethodInterceptor {
 
     private final Map<Method, DataLoadableAttribute> attributeMapping = new ConcurrentHashMap<>();
 
-    private final DataLoaderTemplateManager manager;
+    private final DataLoaderTemplateFactory manager;
 
-    public DataLoaderInterceptor(DataLoaderTemplateManager manager) {
+    public DataLoaderInterceptor(DataLoaderTemplateFactory manager) {
         this.manager = manager;
     }
 
@@ -34,7 +34,7 @@ public class DataLoaderInterceptor implements MethodInterceptor {
             throw new IllegalArgumentException("return type need CompletableFuture");
         };
         DataLoadableAttribute attribute = attributeMapping.computeIfAbsent(invocation.getMethod(), this::parseAttribute);
-        DataLoaderTemplate template = manager.newTemplate(attribute);
+        DataLoaderTemplate template = manager.createTemplate(attribute);
         return template.using(RegistryManager.getRegistry(), callback);
     }
 
