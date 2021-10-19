@@ -1,8 +1,6 @@
 package com.github.lokic.dataloaderplus.spring;
 
 import com.github.lokic.dataloaderplus.core.DataLoaderFactory;
-import com.github.lokic.dataloaderplus.core.DataLoaderTemplate;
-import com.github.lokic.dataloaderplus.core.TemplateConfig;
 import org.dataloader.DataLoaderOptions;
 import org.springframework.beans.factory.config.BeanDefinition;
 import org.springframework.boot.autoconfigure.AutoConfigureAfter;
@@ -30,19 +28,18 @@ public class DataLoaderAutoConfiguration {
     @Role(BeanDefinition.ROLE_INFRASTRUCTURE)
     @Bean
     public DataLoaderInterceptor dataLoadableInterceptor() {
-        return new DataLoaderInterceptor(dataLoaderTemplate());
+        return new DataLoaderInterceptor(dataLoaderTemplateManager());
     }
-
 
     @Bean
-    public DataLoaderTemplate dataLoaderTemplate() {
-        TemplateConfig templateConfig = TemplateConfig.builder()
-                .options(DataLoaderOptions.newOptions())
-                .factory(new DataLoaderFactory())
-                .build();
-        return new DataLoaderTemplate(templateConfig);
+    public DataLoaderTemplateFactory dataLoaderTemplateManager() {
+        return new DataLoaderTemplateFactory(DataLoaderOptions.newOptions(), dataLoaderFactory());
     }
 
+    @Bean
+    public DataLoaderFactory dataLoaderFactory() {
+        return new DataLoaderFactory();
+    }
 
     @Bean
     public BatchLoaderBeanPostProcessor dataLoaderTemplateBeanPostProcessor() {

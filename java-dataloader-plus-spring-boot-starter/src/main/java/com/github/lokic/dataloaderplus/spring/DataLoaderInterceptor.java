@@ -2,19 +2,25 @@ package com.github.lokic.dataloaderplus.spring;
 
 import com.github.lokic.dataloaderplus.core.DataLoaderCallback;
 import com.github.lokic.dataloaderplus.core.DataLoaderTemplate;
-import com.github.lokic.dataloaderplus.core.ExDataLoaderRegistry;
-import com.github.lokic.dataloaderplus.core.RegistryHolder;
+import com.github.lokic.dataloaderplus.core.RegistryManager;
+import com.github.lokic.dataloaderplus.spring.annotation.DataLoadable;
 import org.aopalliance.intercept.MethodInterceptor;
 import org.aopalliance.intercept.MethodInvocation;
+import org.springframework.core.annotation.AnnotationUtils;
 
+import java.lang.reflect.Method;
+import java.util.Map;
 import java.util.concurrent.CompletableFuture;
+import java.util.concurrent.ConcurrentHashMap;
 
 public class DataLoaderInterceptor implements MethodInterceptor {
 
-    private final DataLoaderTemplate template;
+    private final Map<Method, DataLoadableAttribute> attributeMapping = new ConcurrentHashMap<>();
 
-    public DataLoaderInterceptor(DataLoaderTemplate template) {
-        this.template = template;
+    private final DataLoaderTemplateFactory manager;
+
+    public DataLoaderInterceptor(DataLoaderTemplateFactory manager) {
+        this.manager = manager;
     }
 
     @Override
@@ -27,13 +33,17 @@ public class DataLoaderInterceptor implements MethodInterceptor {
             }
             throw new IllegalArgumentException("return type need CompletableFuture");
         };
+        DataLoadableAttribute attribute = attributeMapping.computeIfAbsent(invocation.getMethod(), this::parseAttribute);
+        DataLoaderTemplate template = manager.createTemplate(attribute);
+        return template.using(RegistryManager.getRegistry(), callback);
+    }
 
-        ExDataLoaderRegistry registry = RegistryHolder.getRegistry();
-        if (registry == null) {
-            return template.using(callback);
-        } else {
-            return template.using(registry, callback);
+    private DataLoadableAttribute parseAttribute(Method method) {
+        DataLoadable dataLoadable = AnnotationUtils.findAnnotation(method, DataLoadable.class);
+        if (dataLoadable == null) {
+            throw new IllegalStateException("not found @DataLoadable at method " + method.getName());
         }
+        return DataLoadableAttribute.parseAttribute(dataLoadable);
     }
 
 }

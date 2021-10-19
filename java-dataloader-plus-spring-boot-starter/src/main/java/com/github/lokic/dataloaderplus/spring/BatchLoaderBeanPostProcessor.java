@@ -1,15 +1,15 @@
 package com.github.lokic.dataloaderplus.spring;
 
-import com.github.lokic.dataloaderplus.core.DataLoaderTemplate;
+import com.github.lokic.dataloaderplus.core.DataLoaderFactory;
 import com.github.lokic.dataloaderplus.core.MultiKeyMappedBatchLoader;
-import lombok.SneakyThrows;
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.BeanFactory;
 import org.springframework.beans.factory.BeanFactoryAware;
 import org.springframework.beans.factory.config.InstantiationAwareBeanPostProcessorAdapter;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;
+import org.springframework.core.Ordered;
 
-public class BatchLoaderBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter implements BeanFactoryAware {
+public class BatchLoaderBeanPostProcessor extends InstantiationAwareBeanPostProcessorAdapter implements BeanFactoryAware, Ordered {
 
     private DefaultListableBeanFactory beanFactory;
 
@@ -21,15 +21,19 @@ public class BatchLoaderBeanPostProcessor extends InstantiationAwareBeanPostProc
         }
     }
 
-
-    @SneakyThrows
     @Override
-    public boolean postProcessAfterInstantiation(Object bean, String beanName) throws BeansException {
+    public Object postProcessAfterInitialization(Object bean, String beanName) throws BeansException {
         if (bean instanceof MultiKeyMappedBatchLoader) {
-            DataLoaderTemplate dataLoaderTemplate = beanFactory.getBean(DataLoaderTemplate.class);
-            dataLoaderTemplate.addMultiKeyMappedBatchLoader((MultiKeyMappedBatchLoader<?, ?>) bean);
+            DataLoaderFactory dataLoaderFactory = beanFactory.getBean(DataLoaderFactory.class);
+            // 此处必须是beanName，否则后面基于class name会找不到对应的MultiKeyMappedBatchLoader，
+            // 因为字节码增强之后，bean具体实现类名已经改变
+            dataLoaderFactory.addMultiKeyMappedBatchLoader(beanName, (MultiKeyMappedBatchLoader<?, ?>) bean);
         }
-        return true;
+        return bean;
     }
 
+    @Override
+    public int getOrder() {
+        return Ordered.LOWEST_PRECEDENCE;
+    }
 }

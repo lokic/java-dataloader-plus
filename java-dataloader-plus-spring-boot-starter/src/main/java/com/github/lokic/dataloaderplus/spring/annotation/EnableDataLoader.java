@@ -11,4 +11,5 @@ import java.lang.annotation.*;
 @Import(DataLoaderConfigurationSelector.class)
 public @interface EnableDataLoader {
 
+    String[] basePackages() default {};
 }

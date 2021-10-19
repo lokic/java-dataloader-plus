@@ -1,8 +1,10 @@
 package com.github.lokic.dataloaderplus.spring;
 
-import com.github.lokic.dataloaderplus.core.DataLoaderTemplate;
+import com.github.lokic.dataloaderplus.core.DataLoaderFactory;
 import com.github.lokic.dataloaderplus.spring.annotation.EnableDataLoader;
-import com.github.lokic.dataloaderplus.spring.service.UserService;
+import com.github.lokic.dataloaderplus.spring.client.UserAddressBatchLoader;
+import com.github.lokic.dataloaderplus.spring.client.UserClient;
+import com.github.lokic.dataloaderplus.spring.client.UserNameBatchLoader;
 import org.assertj.core.api.Assertions;
 import org.junit.Test;
 import org.junit.runner.RunWith;
@@ -20,8 +22,11 @@ public class EnableDataLoaderTest {
 
     @Test
     public void test_inject() {
-        Assertions.assertThat(context.getBeansOfType(UserService.class)).hasSize(1);
-        Assertions.assertThat(context.getBeansOfType(DataLoaderTemplate.class)).hasSize(1);
+        Assertions.assertThat(context.getBeansOfType(UserClient.class)).hasSize(1);
+        Assertions.assertThat(context.getBeansOfType(DataLoaderFactory.class)).hasSize(1);
+        Assertions.assertThat(context.getBeansOfType(DataLoaderTemplateFactory.class)).hasSize(1);
+        Assertions.assertThat(context.getBeansOfType(UserNameBatchLoader.class)).hasSize(1);
+        Assertions.assertThat(context.getBeansOfType(UserAddressBatchLoader.class)).hasSize(1);
     }
 
 

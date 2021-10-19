@@ -3,6 +3,7 @@ package com.github.lokic.dataloaderplus.spring;
 import com.github.lokic.dataloaderplus.core.MultiKeyMappedBatchLoader;
 import com.github.lokic.dataloaderplus.core.annotation.DataLoaderMapping;
 import com.github.lokic.dataloaderplus.core.kits.Types;
+import com.github.lokic.dataloaderplus.spring.annotation.EnableDataLoader;
 import lombok.SneakyThrows;
 import org.springframework.aop.config.AopConfigUtils;
 import org.springframework.beans.factory.annotation.AnnotatedBeanDefinition;
@@ -17,10 +18,7 @@ import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.type.AnnotationMetadata;
 
 import java.lang.reflect.Method;
-import java.util.ArrayList;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 public class DataLoaderRegistrar implements ResourceLoaderAware, ImportBeanDefinitionRegistrar {
 
@@ -79,6 +77,7 @@ public class DataLoaderRegistrar implements ResourceLoaderAware, ImportBeanDefin
         beanDefinition.setAutowireMode(AbstractBeanDefinition.AUTOWIRE_CONSTRUCTOR);
         beanDefinition.setRole(BeanDefinition.ROLE_INFRASTRUCTURE);
         beanDefinition.setPrimary(true);
+        // 此处必须是原始class的名字，后面字节码增强之后，实现的类名会改变
         registry.registerBeanDefinition(clazz.getName(), beanDefinition);
     }
 
@@ -88,11 +87,16 @@ public class DataLoaderRegistrar implements ResourceLoaderAware, ImportBeanDefin
      * @param importingClassMetadata
      * @return
      */
-    Set<String> getBasePackages(AnnotationMetadata importingClassMetadata) {
+    private Set<String> getBasePackages(AnnotationMetadata importingClassMetadata) {
         Set<String> basePackages = new HashSet<>();
-        basePackages.add(
-                Types.getPackageName(importingClassMetadata.getClassName()));
-
+        Map<String, Object> annotationAttributes = importingClassMetadata.getAnnotationAttributes(EnableDataLoader.class.getName());
+        String[] basePackagesAttr = (String[]) annotationAttributes.get("basePackages");
+        if (basePackagesAttr == null || basePackagesAttr.length == 0) {
+            basePackages.add(
+                    Types.getPackageName(importingClassMetadata.getClassName()));
+        } else {
+            basePackages.addAll(Arrays.asList(basePackagesAttr));
+        }
         return basePackages;
     }
 
