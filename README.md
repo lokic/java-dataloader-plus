@@ -132,7 +132,7 @@
 
 ## 注意
 
-- 如果要使用CompletableFuture中的相关方法，对@DataLoaderMapping返回的数据进行处理，则必须使用 **同步** 的方法，不能是异步相关的方法，即不能使用xxxAsync结尾的方法
+- 如果要使用CompletableFuture中的相关方法，对@DataLoaderMapping返回的数据进行处理，则必须使用 `同步` 的方法，不能是异步相关的方法，即不能使用xxxAsync结尾的方法
 
 
 - 如果直接调用同一个类中使用@DataLoadable注解的方法，是不生效的。
