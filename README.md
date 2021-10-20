@@ -122,7 +122,7 @@ development）。本工具在java-dataloader基础上进行扩展，简化了jav
   public interface UserClient {
     
       @DataLoaderMapping(batchLoader = UserNameBatchLoader.class)
-      CompletableFuture<String> getNameById(String id, @KeyContext String environment);
+      CompletableFuture<String> getNameById(String id, @KeyContext String context);
   }
   ```
 
