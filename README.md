@@ -1,12 +1,10 @@
 # java-dataloader-plus
 
-用于简化java-dataloader开发的增强工具包（a powerful enhanced toolkit of java-dataloader for simplify
-development）
+用于简化java-dataloader开发的增强工具包（a powerful enhanced toolkit of java-dataloader for simplify development）。
 
-本工具在java-dataloader基础上进行扩展，简化了java-dataloader的接入成本，并且减少了java-dataloader对业务代码的侵入。
+`java-dataloader-plus`在java-dataloader基础上进行扩展，简化了java-dataloader的接入成本，并且减少了java-dataloader对业务代码的侵入。
 
-[java-dataloader](https://github.com/graphql-java/java-dataloader)
-可以作为应用程序的数据层的组成部分，在不同的后端提供一致的API，并通过批处理和缓存减少消息通信的开销，并且可以有效得解决在应用开发中经常碰到"n+1 "获取问题。
+[java-dataloader](https://github.com/graphql-java/java-dataloader) 可以作为应用程序的数据层的组成部分，在不同的后端提供一致的API，并通过批处理和缓存减少消息通信的开销，并且可以有效得解决在应用开发中经常碰到“n+1”获取问题。
 
 ## 开始使用
 
@@ -61,7 +59,6 @@ development）
   private UserService userService;
   
   public void process(List<String> uidList) {
-    
       // 建议使用CompletableFutures#join(CompletableFuture)来阻塞获取值，而不是CompletableFuture#join()。
       // CompletableFutures#join(CompletableFuture)会把实际异常抛出，而不是使用CompletionException封装之后抛出，这样可以减少引入CompletableFuture对业务代码的侵入。
       List<String> names = CompletableFutures.join(userService.getNameList(uidList));
@@ -72,8 +69,8 @@ development）
   @Service
   public class UserService {
       @Autowired
-	    private UserClient userClient;
-    
+      private UserClient userClient;
+	  
       @DataLoadable
       public CompletableFuture<List<String>> getNameList(List<String> uidList) {
         List<CompletableFuture<String>> nameFutureList = uidList.stream()
