@@ -8,7 +8,7 @@ public enum Propagation {
     REQUIRED,
 
     /**
-     * 新建一个Registry执行
+     * 基于当前配置，新建一个Registry执行
      */
     REQUIRES_NEW
 }
