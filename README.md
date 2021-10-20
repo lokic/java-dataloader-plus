@@ -45,7 +45,7 @@ development）
   
       @Override
       public Map<String, String> doLoad(Set<String> set, BatchLoaderEnvironment batchLoaderEnvironment) {
-        	...
+          ...
       }
   }
   ```
@@ -61,11 +61,11 @@ development）
   private UserService userService;
   
   public void process(List<String> uidList) {
-    	/* 
-    	 * 建议使用CompletableFutures#join(CompletableFuture)来阻塞获取值，而不是CompletableFuture#join()。
-    	 * CompletableFutures#join(CompletableFuture)会把实际异常抛出，而不是使用CompletionException封装之后抛出，这样可以减少引入CompletableFuture对业务代码的侵入。
-    	 */
-    	List<String> names = CompletableFutures.join(userService.getNameList(uidList));
+      /* 
+       * 建议使用CompletableFutures#join(CompletableFuture)来阻塞获取值，而不是CompletableFuture#join()。
+       * CompletableFutures#join(CompletableFuture)会把实际异常抛出，而不是使用CompletionException封装之后抛出，这样可以减少引入CompletableFuture对业务代码的侵入。
+       */
+      List<String> names = CompletableFutures.join(userService.getNameList(uidList));
       ...
   }
   
