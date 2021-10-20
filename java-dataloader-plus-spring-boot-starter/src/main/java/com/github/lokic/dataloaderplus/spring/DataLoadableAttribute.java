@@ -8,21 +8,25 @@ public class DataLoadableAttribute {
 
     /**
      * @see DataLoadable#batchingEnabled()
+     * @see org.dataloader.DataLoaderOptions#batchingEnabled()
      */
     private boolean batchingEnabled;
 
     /**
      * @see DataLoadable#cachingEnabled()
+     * @see org.dataloader.DataLoaderOptions#cachingEnabled()
      */
     private boolean cachingEnabled;
 
     /**
      * @see DataLoadable#cachingExceptionsEnabled()
+     * @see org.dataloader.DataLoaderOptions#cachingExceptionsEnabled()
      */
     private boolean cachingExceptionsEnabled;
 
     /**
      * @see DataLoadable#maxBatchSize()
+     * @see org.dataloader.DataLoaderOptions#maxBatchSize()
      */
     private int maxBatchSize;
 

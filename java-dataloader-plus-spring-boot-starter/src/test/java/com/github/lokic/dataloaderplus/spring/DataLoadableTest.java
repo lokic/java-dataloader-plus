@@ -34,12 +34,12 @@ public class DataLoadableTest {
 
     @Test(expected = IllegalArgumentException.class)
     public void test_DataLoadable_throw_in_template() {
-        CompletableFutures.getOrElseSneakyThrow(userAppService.getThrow("123"));
+        CompletableFutures.join(userAppService.getThrow("123"));
     }
 
     @Test
     public void test_DataLoadable_get_in_template() {
-        Assert.assertEquals("123,name:123,address:123", CompletableFutures.getOrElseSneakyThrow(userAppService.get("123")));
+        Assert.assertEquals("123,name:123,address:123", CompletableFutures.join(userAppService.get("123")));
         Mockito.verify(userNameBatchLoader, Mockito.times(1))
                 .doLoad(Mockito.any(), Mockito.any());
         Mockito.verify(userAddressBatchLoader, Mockito.times(1))
@@ -48,7 +48,7 @@ public class DataLoadableTest {
 
     @Test
     public void test_DataLoadable_getNew_in_template() throws Throwable {
-        String res = CompletableFutures.getOrElseSneakyThrow(userAppService.getNew("123"));
+        String res = CompletableFutures.join(userAppService.getNew("123"));
         Mockito.verify(dataLoaderInterceptor, Mockito.times(2))
                 .invoke(Mockito.any());
         Mockito.verify(userNameBatchLoader, Mockito.times(1))
@@ -60,7 +60,7 @@ public class DataLoadableTest {
 
     @Test
     public void test_DataLoadable_getRepeatNew_in_template() throws Throwable {
-        CompletableFutures.getOrElseSneakyThrow(userAppService.getRepeatNew("123"));
+        CompletableFutures.join(userAppService.getRepeatNew("123"));
         Mockito.verify(dataLoaderInterceptor, Mockito.times(2))
                 .invoke(Mockito.any());
         Mockito.verify(userNameBatchLoader, Mockito.times(2))
@@ -69,7 +69,7 @@ public class DataLoadableTest {
 
     @Test
     public void test_DataLoadable_getNest_in_template() throws Throwable {
-        CompletableFutures.getOrElseSneakyThrow(userAppService.getNest("123"));
+        CompletableFutures.join(userAppService.getNest("123"));
         Mockito.verify(dataLoaderInterceptor, Mockito.times(2))
                 .invoke(Mockito.any());
         Mockito.verify(userNameBatchLoader, Mockito.times(1))
