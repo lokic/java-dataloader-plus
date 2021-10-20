@@ -76,8 +76,9 @@ development）。本工具在java-dataloader基础上进行扩展，简化了jav
       @DataLoadable
       public CompletableFuture<List<String>> getNameList(List<String> uidList) {
         List<CompletableFuture<String>> nameFutureList = uidList.stream()
-          .map(userClient::getNameById)
-          .collect(Collectors.toList());
+              .map(userClient::getNameById)
+              .collect(Collectors.toList());
+        
         // CompletableFutures#sequence可以很方便得把List<CompletableFuture>转换成CompletableFuture<List>
         return CompletableFutures.sequence(nameFutureList);
       }
