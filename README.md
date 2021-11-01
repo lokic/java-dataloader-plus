@@ -1,10 +1,16 @@
 # java-dataloader-plus
 
-用于简化java-dataloader开发的增强工具包（a powerful enhanced toolkit of java-dataloader for simplify development）。
 
-`java-dataloader-plus`在java-dataloader基础上进行扩展，简化了java-dataloader的接入成本，并且减少了java-dataloader对业务代码的侵入。
 
-[java-dataloader](https://github.com/graphql-java/java-dataloader) 可以作为应用程序的数据层的组成部分，在不同的后端提供一致的API，并通过批处理和缓存减少消息通信的开销，并且可以有效得解决在应用开发中经常碰到“n+1”获取问题。
+> [java-dataloader](https://github.com/graphql-java/java-dataloader) 可以作为应用程序的数据层的组成部分，在不同的后端提供一致的API，并通过批处理和缓存减少消息通信的开销，并且可以有效得解决在应用开发中经常碰到“n+1”获取问题。
+
+
+
+## 简介
+
+`java-dataloader-plus`是用于简化java-dataloader开发的增强工具包（a powerful enhanced toolkit of java-dataloader for simplify development）。java-dataloader-plus 在java-dataloader基础上进行扩展，简化了java-dataloader的接入成本，并且减少了java-dataloader对业务代码的侵入。
+
+
 
 ## 开始使用
 
