@@ -9,8 +9,8 @@ import java.lang.annotation.*;
 @Retention(RetentionPolicy.RUNTIME)
 @Target(ElementType.TYPE)
 @Documented
-@Import(DataLoaderConfigurationSelector.class)
 @EnableAspectJAutoProxy(proxyTargetClass = true)
+@Import(DataLoaderConfigurationSelector.class)
 public @interface EnableDataLoader {
 
     String[] basePackages() default {};
