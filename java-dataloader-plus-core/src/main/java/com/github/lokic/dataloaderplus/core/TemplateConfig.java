@@ -10,7 +10,7 @@ import java.util.Objects;
 public class TemplateConfig {
 
     private static final DataLoaderOptions DEFAULT_OPTIONS = DataLoaderOptions.newOptions();
-    private static final DataLoaderFactory DEFAULT_FACTORY = new DataLoaderFactory();
+    private static final DataLoaderFactory DEFAULT_FACTORY = new DataLoaderFactoryImpl();
 
     private final DataLoaderOptions options;
     private final DataLoaderFactory factory;
