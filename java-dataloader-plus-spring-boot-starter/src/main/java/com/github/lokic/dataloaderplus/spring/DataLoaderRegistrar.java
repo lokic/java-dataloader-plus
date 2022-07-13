@@ -15,7 +15,7 @@ public class DataLoaderRegistrar extends ProxyRegistrar {
     }
 
     @Override
-    protected Class<? extends Annotation> getAnnotationType() {
+    protected Class<? extends Annotation> getClassAnnotationType() {
         return DataLoaderService.class;
     }
 
