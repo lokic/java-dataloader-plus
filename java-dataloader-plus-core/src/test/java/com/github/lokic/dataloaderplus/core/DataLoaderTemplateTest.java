@@ -5,6 +5,7 @@ import com.github.lokic.dataloaderplus.core.service.UserNameBatchLoader;
 import com.github.lokic.dataloaderplus.core.service.UserService;
 import com.github.lokic.dataloaderplus.core.service.UserService2;
 import com.github.lokic.javaplus.CompletableFutures;
+import lombok.SneakyThrows;
 import lombok.extern.slf4j.Slf4j;
 import org.dataloader.BatchLoaderEnvironment;
 import org.dataloader.DataLoaderOptions;
@@ -13,6 +14,7 @@ import org.junit.Before;
 import org.junit.Test;
 import org.mockito.Mockito;
 
+import java.lang.reflect.Field;
 import java.util.*;
 import java.util.concurrent.CompletableFuture;
 import java.util.stream.Collectors;
@@ -31,17 +33,24 @@ public class DataLoaderTemplateTest {
 
     private UserService2 userService2;
 
+    @SuppressWarnings("unchecked")
+    @SneakyThrows
     @Before
     public void init() {
-
-        UserAddressBatchLoader userAddressBatchLoader = Mockito.spy(new UserAddressBatchLoader());
         userService2 = ExDataLoaderRegistry.getService(UserService2.class);
         userService = ExDataLoaderRegistry.getService(UserService.class);
 
-        UserNameBatchLoader userNameBatchLoader = Mockito.spy(new UserNameBatchLoader());
-        DataLoaderFactory factory = new DataLoaderFactory();
-        factory.addMultiKeyMappedBatchLoader(UserNameBatchLoader.class.getName(), userNameBatchLoader);
-        factory.addMultiKeyMappedBatchLoader(UserAddressBatchLoader.class.getName(), userAddressBatchLoader);
+        DataLoaderFactory factory = new DataLoaderFactoryImpl();
+        factory.getInstance(UserNameBatchLoader.class);
+        factory.getInstance(UserAddressBatchLoader.class);
+
+        Field field = AbstractDataLoaderFactory.class.getDeclaredField("dataLoaderCreators");
+        field.setAccessible(true);
+        Map<Object, Object> map = (Map<Object, Object>) field.get(factory);
+        for (Object aClass : map.keySet()) {
+            Object o = map.get(aClass);
+            map.put(aClass, Mockito.spy(o));
+        }
 
         templateConfig = new TemplateConfig(DataLoaderOptions.newOptions(), factory, Propagation.REQUIRED);
         template = new DataLoaderTemplate(templateConfig);
@@ -79,8 +88,8 @@ public class DataLoaderTemplateTest {
         expectedRes.add("2" + "," + "name:2" + "," + "address:2");
         Assert.assertEquals(expectedRes, strings);
 
-        UserNameBatchLoader userNameBatchLoader = (UserNameBatchLoader) templateConfig.getFactory().getMultiKeyMappedBatchLoader(UserNameBatchLoader.class.getName());
-        UserAddressBatchLoader userAddressBatchLoader = (UserAddressBatchLoader) templateConfig.getFactory().getMultiKeyMappedBatchLoader(UserAddressBatchLoader.class.getName());
+        UserNameBatchLoader userNameBatchLoader = templateConfig.getFactory().getInstance(UserNameBatchLoader.class);
+        UserAddressBatchLoader userAddressBatchLoader = templateConfig.getFactory().getInstance(UserAddressBatchLoader.class);
         Mockito.verify(userNameBatchLoader, Mockito.times(1))
                 .load(Mockito.eq(set), Mockito.any());
 

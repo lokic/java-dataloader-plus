@@ -1,32 +1,20 @@
 package com.github.lokic.dataloaderplus.core;
 
+import lombok.SneakyThrows;
 import org.dataloader.DataLoader;
 import org.dataloader.DataLoaderOptions;
-
-import java.util.Map;
-import java.util.Optional;
-import java.util.concurrent.ConcurrentHashMap;
 
 /**
  * DataLoader的工厂，基于 {@link MultiKeyMappedBatchLoader} 创建 {@link DataLoader}
  */
-public class DataLoaderFactory {
+public interface DataLoaderFactory {
 
-    private final Map<String, MultiKeyMappedBatchLoader<?, ?>> DATA_LOADER_CREATORS = new ConcurrentHashMap<>();
+    <T extends MultiKeyMappedBatchLoader<?, ?>> T getInstance(Class<T> batchLoaderType);
 
-    public void addMultiKeyMappedBatchLoader(String name, MultiKeyMappedBatchLoader<?, ?> dataLoaderProvider) {
-        DATA_LOADER_CREATORS.put(name, dataLoaderProvider);
-    }
 
-    public MultiKeyMappedBatchLoader<?, ?> getMultiKeyMappedBatchLoader(String name) {
-        return DATA_LOADER_CREATORS.get(name);
-    }
-
-    public DataLoader<?, ?> create(String name, DataLoaderOptions options) {
-        MultiKeyMappedBatchLoader<?, ?> loader = Optional.ofNullable(DATA_LOADER_CREATORS.get(name))
-                .orElseThrow(() -> new IllegalArgumentException("not found data loader supplier, name = " + name));
-
+    @SneakyThrows
+    default DataLoader<?, ?> create(Class<? extends MultiKeyMappedBatchLoader<?, ?>> batchLoaderType, DataLoaderOptions options) {
+        MultiKeyMappedBatchLoader<?, ?> loader = getInstance(batchLoaderType);
         return org.dataloader.DataLoaderFactory.newMappedDataLoader(loader, options);
     }
-
 }

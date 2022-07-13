@@ -24,9 +24,6 @@ public class EnableDataLoaderTest {
     public void test_inject() {
         Assertions.assertThat(context.getBeansOfType(UserClient.class)).hasSize(1);
         Assertions.assertThat(context.getBeansOfType(DataLoaderFactory.class)).hasSize(1);
-        Assertions.assertThat(context.getBeansOfType(DataLoaderTemplateFactory.class)).hasSize(1);
-        Assertions.assertThat(context.getBeansOfType(UserNameBatchLoader.class)).hasSize(1);
-        Assertions.assertThat(context.getBeansOfType(UserAddressBatchLoader.class)).hasSize(1);
     }
 
 

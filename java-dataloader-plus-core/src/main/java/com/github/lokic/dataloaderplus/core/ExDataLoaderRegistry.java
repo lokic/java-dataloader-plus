@@ -53,8 +53,8 @@ public class ExDataLoaderRegistry implements AutoCloseable {
      * @param <V>
      * @return
      */
-    public <K, V> DataLoader<K, V> getOrRegisterDataLoader(Class<? extends MappedBatchLoaderWithContext<?, ?>> clazz) {
-        return registry.computeIfAbsent(clazz.getName(), key -> factory.create(key, options));
+    public <K, V> DataLoader<K, V> getOrRegisterDataLoader(Class<? extends MultiKeyMappedBatchLoader<?, ?>> clazz) {
+        return registry.computeIfAbsent(clazz.getName(), key -> factory.create(clazz, options));
     }
 
     public void dispatchAll() {
